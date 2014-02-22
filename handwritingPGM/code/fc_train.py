@@ -1,8 +1,7 @@
-import re
 from math import log
 
 import SETTINGS
-from util import read_file, parse_data, get_similarity_score, get_feature_map
+from util import read_file, parse_data, get_similarity_score, get_feature_map, remove_inconsistencies
 
 
 def get_features(folderpath):
@@ -14,18 +13,21 @@ def get_features(folderpath):
         # If list is not empty
         if parsed_data != None:
             features.append(parsed_data)
-    return features
+    
+    # Imputing missing data        
+    final_features = remove_inconsistencies(features)  
+          
+    return final_features
 
 
 def calculate_mean(features):
-    sumList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    sumList = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     
-    for features in features:
-        # features = [ int(x) for x in features ]
-        for i in range(len(features)):
-            sumList[i] = sumList[i] + features[i]
+    for feature in features:
+        for i in range(len(feature)):
+            sumList[i] = sumList[i] + feature[i]
         
-    meanList = [x / len(features) for x in sumList]
+    meanList = [float(x) / len(features) for x in sumList]
         
     return meanList    
 
@@ -46,57 +48,92 @@ def get_entropy(features):
     s = 0
     no_samples = len(features)
     
+    # creating feature map to calculate the probability of each feature set
     feature_map = get_feature_map(features)
+    
     for feature in features:
-        s += log(float(feature_map[tuple(feature)]) / no_samples)
+        p_x = float(feature_map[tuple(feature)])
+        s += p_x * log(p_x / no_samples)
 
     s = s / no_samples
     s = -s
     return s    
     
 
+def get_relative_entropy(p_features, q_features):
+    s = 0
+    max_sample = max(len(p_features), len(q_features))
+    
+    p_feature_map = get_feature_map(p_features)
+    q_feature_map = get_feature_map(q_features)
+    
+    for feature_p, feature_q in zip(p_features, q_features):
+        p_x = float(p_feature_map[tuple(feature_p)]) / max_sample
+        q_x = float(q_feature_map[tuple(feature_q)]) / max_sample
+        
+        s += float(p_x) * (log(float(p_x/q_x)))
+    
+    s = s/ max_sample
+    return s
+
 
 if __name__ == "__main__":
     total_feat_cursive_3rd = get_features(SETTINGS.file_path_cursive_3rd)
     total_feat_cursive_4th = get_features(SETTINGS.file_path_cursive_4th)
-        
+         
     total_feat_printed_1st = get_features(SETTINGS.file_path_printed_1st)
     total_feat_printed_2nd = get_features(SETTINGS.file_path_printed_2nd)
     total_feat_printed_3rd = get_features(SETTINGS.file_path_printed_3rd)
     total_feat_printed_4th = get_features(SETTINGS.file_path_printed_4th)
-    
-    print "Features", len(total_feat_cursive_3rd), len(total_feat_cursive_4th), len(total_feat_printed_1st), len(total_feat_printed_2nd), len(total_feat_printed_3rd), len(total_feat_printed_4th)
-      
+     
+    print "Features", total_feat_cursive_3rd, len(total_feat_cursive_4th), len(total_feat_printed_1st), len(total_feat_printed_2nd), len(total_feat_printed_3rd), len(total_feat_printed_4th)
+       
     # Calculating mean    
     mean_cursive_3rd = calculate_mean(total_feat_cursive_3rd)
     mean_cursive_4th = calculate_mean(total_feat_cursive_4th)
-      
+       
     mean_printed_1st = calculate_mean(total_feat_printed_1st)
     mean_printed_2nd = calculate_mean(total_feat_printed_2nd)
     mean_printed_3rd = calculate_mean(total_feat_printed_3rd)
     mean_printed_4th = calculate_mean(total_feat_printed_4th)
-    
-    
+     
+    print "Mean", mean_cursive_3rd, mean_cursive_4th, mean_printed_1st, mean_printed_2nd, mean_printed_2nd, mean_printed_3rd, mean_printed_4th 
+     
     # Finding samples which are closest to the mean
     similar_scores_mean_cursive_3rd = get_similar_samples(total_feat_cursive_3rd, mean_cursive_3rd)
     similar_scores_mean_cursive_4th = get_similar_samples(total_feat_cursive_4th, mean_cursive_4th)
-    
+      
     similar_scores_mean_printed_1st = get_similar_samples(total_feat_printed_1st, mean_printed_1st)
     similar_scores_mean_printed_2nd = get_similar_samples(total_feat_printed_2nd, mean_printed_2nd)
     similar_scores_mean_printed_3rd = get_similar_samples(total_feat_printed_3rd, mean_printed_3rd)
     similar_scores_mean_printed_4th = get_similar_samples(total_feat_printed_4th, mean_printed_4th)
-    
-    print "Similarity scores", len(similar_scores_mean_cursive_3rd), len(similar_scores_mean_cursive_4th), len(similar_scores_mean_printed_1st), len(similar_scores_mean_printed_2nd), len(similar_scores_mean_printed_3rd), len(similar_scores_mean_printed_4th)
-    
-    
+      
+    #TODO: Need to get top samples  
+    print "Similarity scores", similar_scores_mean_cursive_3rd, len(similar_scores_mean_cursive_4th), len(similar_scores_mean_printed_1st), len(similar_scores_mean_printed_2nd), len(similar_scores_mean_printed_3rd), len(similar_scores_mean_printed_4th)
+      
+      
     entropy_cursive_3rd = get_entropy(total_feat_cursive_3rd)
     entropy_cursive_4th = get_entropy(total_feat_cursive_4th)
-    
+      
     entropy_printed_1st = get_entropy(total_feat_printed_1st)
     entropy_printed_2nd = get_entropy(total_feat_printed_2nd)
     entropy_printed_3rd = get_entropy(total_feat_printed_3rd)
     entropy_printed_4th = get_entropy(total_feat_printed_4th)
-    
+      
     print "Entropy", entropy_cursive_3rd, entropy_cursive_4th, entropy_printed_1st, entropy_printed_2nd, entropy_printed_3rd, entropy_printed_4th
+      
+     
+    relative_entropy_cursive_approximate_3rd_with_4th = get_relative_entropy(total_feat_cursive_3rd, total_feat_cursive_4th)
+    relative_entropy_cursive_approximate_4th_with_3rd = get_relative_entropy(total_feat_cursive_4th, total_feat_cursive_3rd)  
     
+    relative_entropy_printed_approximate_1st_with_2nd = get_relative_entropy(total_feat_printed_1st, total_feat_printed_2nd)
+    relative_entropy_printed_approximate_2nd_with_1st = get_relative_entropy(total_feat_printed_2nd, total_feat_printed_1st)
     
+    #TODO: Opposite cases
+    relative_entropy_printed_approximate_1st_with_3rd = get_relative_entropy(total_feat_printed_1st, total_feat_printed_3rd)  
+    relative_entropy_printed_approximate_1st_with_4th = get_relative_entropy(total_feat_printed_1st, total_feat_printed_4th)
+    relative_entropy_printed_approximate_2nd_with_3rd = get_relative_entropy(total_feat_printed_2nd, total_feat_printed_3rd)
+    relative_entropy_printed_approximate_2nd_with_4th = get_relative_entropy(total_feat_printed_2nd, total_feat_printed_4th) 
+    relative_entropy_printed_approximate_3rd_with_4th = get_relative_entropy(total_feat_printed_3rd, total_feat_printed_4th)   
+    
+    print "Relative Entropy", relative_entropy_cursive_approximate_3rd_with_4th, relative_entropy_printed_approximate_1st_with_2nd, relative_entropy_printed_approximate_1st_with_3rd, relative_entropy_printed_approximate_1st_with_4th, relative_entropy_printed_approximate_2nd_with_3rd, relative_entropy_printed_approximate_2nd_with_4th, relative_entropy_printed_approximate_3rd_with_4th
