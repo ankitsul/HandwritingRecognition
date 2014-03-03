@@ -86,7 +86,7 @@ if __name__ == "__main__":
     total_feat_printed_3rd = get_features(SETTINGS.file_path_printed_3rd)
     total_feat_printed_4th = get_features(SETTINGS.file_path_printed_4th)
      
-    print "Features", total_feat_cursive_3rd, len(total_feat_cursive_4th), len(total_feat_printed_1st), len(total_feat_printed_2nd), len(total_feat_printed_3rd), len(total_feat_printed_4th)
+    print "Features", len(total_feat_cursive_3rd), len(total_feat_cursive_4th), len(total_feat_printed_1st), len(total_feat_printed_2nd), len(total_feat_printed_3rd), len(total_feat_printed_4th)
        
     # Calculating mean    
     mean_cursive_3rd = calculate_mean(total_feat_cursive_3rd)

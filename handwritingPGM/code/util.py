@@ -58,12 +58,22 @@ def parse_data(data):
     
     
 def remove_inconsistencies(features):
+    count = 0 
+    number_of_inconsistent_rows=0
     for feature in features:
+        
+        #Counting the number of inconsistent rows for statistics 
+        if(count>0):
+            number_of_inconsistent_rows = number_of_inconsistent_rows+1
+        count=0
+        
         for index in range(len(feature)):
-            # Replacing -1 and 99 with None 
+            # Replacing -1 and 99 with None
             if feature[index] == -1 or feature[index] == 99:
                 feature[index] = None
+                count=count+1
     
+    #print "Number of inconsistent rows:" + str(number_of_inconsistent_rows)
     # Getting approximate value for each 'None'
     for feature in features:
         for index in range(len(feature)):
