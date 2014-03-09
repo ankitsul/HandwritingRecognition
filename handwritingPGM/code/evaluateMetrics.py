@@ -53,7 +53,7 @@ def get_entropy(features):
     
     for feature in features:
         p_x = float(feature_map[tuple(feature)])
-        s += p_x * log(p_x / no_samples)
+        s += log(p_x / no_samples)
 
     s = s / no_samples
     s = -s
@@ -71,7 +71,7 @@ def get_relative_entropy(p_features, q_features):
         p_x = float(p_feature_map[tuple(feature_p)]) / max_sample
         q_x = float(q_feature_map[tuple(feature_q)]) / max_sample
         
-        s += float(p_x) * (log(float(p_x/q_x)))
+        s += (log(float(p_x/q_x)))
     
     s = s/ max_sample
     return s
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     similar_scores_mean_printed_4th = get_similar_samples(total_feat_printed_4th, mean_printed_4th)
       
     #TODO: Need to get top samples  
-    print "Similarity scores", similar_scores_mean_cursive_3rd, len(similar_scores_mean_cursive_4th), len(similar_scores_mean_printed_1st), len(similar_scores_mean_printed_2nd), len(similar_scores_mean_printed_3rd), len(similar_scores_mean_printed_4th)
+    print "Similarity scores", len(similar_scores_mean_cursive_3rd), len(similar_scores_mean_cursive_4th), len(similar_scores_mean_printed_1st), len(similar_scores_mean_printed_2nd), len(similar_scores_mean_printed_3rd), len(similar_scores_mean_printed_4th)
       
       
     entropy_cursive_3rd = get_entropy(total_feat_cursive_3rd)
@@ -124,12 +124,11 @@ if __name__ == "__main__":
       
      
     relative_entropy_cursive_approximate_3rd_with_4th = get_relative_entropy(total_feat_cursive_3rd, total_feat_cursive_4th)
-    relative_entropy_cursive_approximate_4th_with_3rd = get_relative_entropy(total_feat_cursive_4th, total_feat_cursive_3rd)  
+    #relative_entropy_cursive_approximate_4th_with_3rd = get_relative_entropy(total_feat_cursive_4th, total_feat_cursive_3rd)  
+    
     
     relative_entropy_printed_approximate_1st_with_2nd = get_relative_entropy(total_feat_printed_1st, total_feat_printed_2nd)
-    relative_entropy_printed_approximate_2nd_with_1st = get_relative_entropy(total_feat_printed_2nd, total_feat_printed_1st)
-    
-    #TODO: Opposite cases
+    #relative_entropy_printed_approximate_2nd_with_1st = get_relative_entropy(total_feat_printed_2nd, total_feat_printed_1st)
     relative_entropy_printed_approximate_1st_with_3rd = get_relative_entropy(total_feat_printed_1st, total_feat_printed_3rd)  
     relative_entropy_printed_approximate_1st_with_4th = get_relative_entropy(total_feat_printed_1st, total_feat_printed_4th)
     relative_entropy_printed_approximate_2nd_with_3rd = get_relative_entropy(total_feat_printed_2nd, total_feat_printed_3rd)

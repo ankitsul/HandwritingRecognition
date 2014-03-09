@@ -1,9 +1,10 @@
 from os import listdir
 from os.path import isfile, join
 import re
+import xlrd
 
 def read_file(folderpath):
-    features_cursive_3rd = []
+    features = []
     # folder_path_cursive_3rd = SETTINGS.file_path_cursive_3rd
     files = [f for f in listdir(folderpath) if isfile(join(folderpath, f))]
     # Reading each fileVar one by one
@@ -12,10 +13,107 @@ def read_file(folderpath):
     
         # Reading each line
         for line in f:          
-            features_cursive_3rd.append(line)
+            features.append(line)
         f.close()    
         
-    return features_cursive_3rd    
+    return features    
+
+def read_csv_file(filepath):
+    book = xlrd.open_workbook(filepath)
+    sheet = book.sheet_by_name("Sheet1")
+
+    #From grade 1st to 2nd
+    #To store features of student going from 1st to 2nd grade - 1st grade
+    total_feat_printing_1st_to_2nd_1st = []
+    
+    #To store features of student going from 1st to 2nd grade - 2nd grade
+    total_feat_printing_1st_to_2nd_2nd = []
+    
+    #From grade 2nd to 3rd
+    total_feat_printing_2nd_to_3rd_2nd = []
+    
+    total_feat_cursive_2nd_to_3rd_3rd = []
+    total_feat_printing_2nd_to_3rd_3rd = []
+    
+    #From grade 3rd to 4th
+    total_feat_cursive_3rd_to_4th_3rd = []
+    total_feat_printing_3rd_to_4th_3rd = []
+    
+    total_feat_cursive_3rd_to_4th_4th = []
+    total_feat_printing_3rd_to_4th_4th = []
+    
+    #From grade 4th to 5th 
+    total_feat_cursive_4th_to_5th_4th = []
+    total_feat_printing_4th_to_5th_4th = []
+    
+    total_feat_cursive_4th_to_5th_5th = []
+    total_feat_printing_4th_to_5th_5th = []
+        
+        
+    for row_index in range(sheet.nrows):
+        #First set, which is from first grade to second grade
+        if row_index < 151:
+            year_eleven_twelve = sheet.cell(row_index, 1)
+            year_twelve_thirteen = sheet.cell(row_index, 4)
+            
+            #For 1st column i.e grade 1
+            if 'text' in str(year_eleven_twelve):
+                total_feat_printing_1st_to_2nd_1st.append(str(year_eleven_twelve))
+                
+            #For 4th column i.e grade 2
+            if 'text' in str(year_twelve_thirteen):
+                total_feat_printing_1st_to_2nd_2nd.append(str(year_twelve_thirteen))
+        
+        #Second set, which is from second grade to third grade
+        elif row_index > 151 and row_index < 1189:
+            year_eleven_twelve = sheet.cell(row_index, 1)
+            year_twelve_thirteen = sheet.cell(row_index, 4)
+            
+            #For 1st column i.e grade 2
+            if 'text' in str(year_eleven_twelve):
+                total_feat_printing_2nd_to_3rd_2nd.append(str(year_eleven_twelve))
+                
+            #For 4th column i.e grade 3    
+            if 'text' in str(year_twelve_thirteen) and 'cursi' in str(year_twelve_thirteen):
+                total_feat_cursive_2nd_to_3rd_3rd.append(str(year_twelve_thirteen))
+            elif 'text' in str(year_twelve_thirteen) and 'print' in str(year_twelve_thirteen):
+                total_feat_printing_2nd_to_3rd_3rd.append(str(year_twelve_thirteen))
+                    
+        #Third set, which is from third grade to fourth grade            
+        elif row_index > 1198 and row_index < 1720:
+            year_eleven_twelve = sheet.cell(row_index, 1)
+            year_twelve_thirteen = sheet.cell(row_index, 4)
+            
+            #For 1st column i.e grade 3
+            if 'text' in str(year_eleven_twelve) and 'cursi' in str(year_eleven_twelve):
+                total_feat_cursive_3rd_to_4th_3rd.append(str(year_eleven_twelve))
+            elif 'text' in str(year_eleven_twelve) and 'print' in str(year_eleven_twelve):
+                total_feat_printing_3rd_to_4th_3rd.append(str(year_eleven_twelve))
+                    
+            #For 4th column i.e grade 4    
+            if 'text' in str(year_twelve_thirteen) and 'cursi' in str(year_twelve_thirteen):
+                total_feat_cursive_3rd_to_4th_4th.append(str(year_twelve_thirteen))
+            elif 'text' in str(year_twelve_thirteen) and 'print' in str(year_twelve_thirteen):
+                total_feat_printing_3rd_to_4th_4th.append(str(year_twelve_thirteen))
+                
+        #Third set, which is from fourth grade to fifth grade
+        elif row_index > 1734 and row_index < 2163:
+            year_eleven_twelve = sheet.cell(row_index, 1)
+            year_twelve_thirteen = sheet.cell(row_index, 4)
+            
+            #For 1st column i.e grade 3
+            if 'text' in str(year_eleven_twelve) and 'cursi' in str(year_eleven_twelve):
+                total_feat_cursive_4th_to_5th_4th.append(str(year_eleven_twelve))
+            elif 'text' in str(year_eleven_twelve) and 'print' in str(year_eleven_twelve):
+                total_feat_printing_4th_to_5th_4th.append(str(year_eleven_twelve))
+                    
+            #For 4th column i.e grade 4    
+            if 'text' in str(year_twelve_thirteen) and 'cursi' in str(year_twelve_thirteen):
+                total_feat_cursive_4th_to_5th_5th.append(str(year_twelve_thirteen))
+            elif 'text' in str(year_twelve_thirteen) and 'print' in str(year_twelve_thirteen):
+                total_feat_printing_4th_to_5th_5th.append(str(year_twelve_thirteen))        
+            
+    return total_feat_printing_1st_to_2nd_1st, total_feat_printing_1st_to_2nd_2nd, total_feat_printing_2nd_to_3rd_2nd, total_feat_cursive_2nd_to_3rd_3rd, total_feat_printing_2nd_to_3rd_3rd, total_feat_cursive_3rd_to_4th_3rd, total_feat_printing_3rd_to_4th_3rd, total_feat_cursive_3rd_to_4th_4th, total_feat_printing_3rd_to_4th_4th, total_feat_cursive_4th_to_5th_4th, total_feat_printing_4th_to_5th_4th, total_feat_cursive_4th_to_5th_5th, total_feat_printing_4th_to_5th_5th
 
 
 def parse_data(data):
@@ -27,7 +125,6 @@ def parse_data(data):
         extractedData = str(matched.group())
     else:
         extractedData = ""    
-    
     
     # Cleaning commas as well
     extractedData = extractedData.strip()
@@ -52,8 +149,6 @@ def parse_data(data):
         
         # Removing first two columns as they are not features
         f_return = f_int[2:]
-        
-        
         return f_return
     
     
