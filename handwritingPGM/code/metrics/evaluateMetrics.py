@@ -1,4 +1,5 @@
 from math import log
+import pickle
 
 import SETTINGS
 from util import read_file, parse_data, get_similarity_score, get_feature_map, remove_inconsistencies
@@ -85,6 +86,15 @@ if __name__ == "__main__":
     total_feat_printed_2nd = get_features(SETTINGS.file_path_printed_2nd)
     total_feat_printed_3rd = get_features(SETTINGS.file_path_printed_3rd)
     total_feat_printed_4th = get_features(SETTINGS.file_path_printed_4th)
+    
+    pickle.dump(total_feat_cursive_3rd, open("../cursive_3rd.p", "wb"))
+    pickle.dump(total_feat_cursive_4th, open("../cursive_4th.p", "wb"))
+    
+    pickle.dump(total_feat_printed_1st, open("../printed_1st.p", "wb"))
+    pickle.dump(total_feat_printed_2nd, open("../printed_2nd.p", "wb"))
+    pickle.dump(total_feat_printed_3rd, open("../printed_3rd.p", "wb"))
+    pickle.dump(total_feat_printed_4th, open("../printed_4th.p", "wb"))
+     
      
     print "Features", len(total_feat_cursive_3rd), len(total_feat_cursive_4th), len(total_feat_printed_1st), len(total_feat_printed_2nd), len(total_feat_printed_3rd), len(total_feat_printed_4th)
        
