@@ -1,4 +1,6 @@
 import pickle
+from random import randint
+from math import log10
 
 import SETTINGS
 
@@ -112,7 +114,7 @@ def get_observed_frequency(dict_value):
 def get_expected_frequency(dict_value):
     expected_values = []
     for key, value in dict_value.iteritems():
-        #Calculating expected value for each entry
+        # Calculating expected value for each entry
         expected_values.append(get_cell_value(key, value, dict_value))
 
     return expected_values
@@ -128,10 +130,98 @@ def get_cell_value(key, value, dict_value):
     
     for key_element, value_element in dict_value.iteritems():
         total_sum = total_sum + value_element
-        if (key_element[0]==variable_1):
+        if (key_element[0] == variable_1):
             row_sum = row_sum + value_element
-        if (key_element[1]==variable_2):
+        if (key_element[1] == variable_2):
             column_sum = column_sum + value_element    
     
-    return (row_sum * column_sum)/total_sum
+    return (row_sum * column_sum) / total_sum
+
+
+# METHODS REALTED TO CONSTRUCTING BAYESIAN NETWORK
+
+# method to get log_likelihood value for both graphs - category is "cursive"/"printed"
+def get_log_likelihood(G, G1, category, variables_combinations):
+    s_G = calculate_log_likelihood(G, variables_combinations, category)
+    s_G1 = calculate_log_likelihood(G1, variables_combinations, category)
+    print "&&&"
+    print -s_G, -s_G1
+    return -s_G, -s_G1
+
+
+# method to calculate log_likelihood for a graph
+def calculate_log_likelihood(G, variables_combinations, category):
+    nodes = G.nodes()
+#     print nodes 
+    score_log_likelihood = 0
+    for node in nodes:
+        for parent in G.predecessors(node):
+            score_log_likelihood = score_log_likelihood + get_likelihood_score_for_pair(str(node), str(parent), variables_combinations, category) 
+#             log10(joint_prob/marg_prob)
+            
+    return score_log_likelihood
     
+    
+def get_likelihood_score_for_pair(node, parent, variables_combinations, category):   
+    
+    str1, str2 = node, parent
+
+    # converting into int since the tuple in variable_combinations are of (int, int) form
+    dict_key = int(str1), int(str2)
+    
+    try:
+        values = variables_combinations[dict_key]
+        # Marginalize against parent, it means we need to find the frequency of the other node (not parent)
+        flip = False
+    except:
+        # It means key is in opposite form in the variable_combinations dict
+        dict_key_reverse = dict_key[::-1]
+        values = variables_combinations[dict_key_reverse]
+        flip = True
+        
+        
+    # Definition of marginalization    
+#     if node_to_marginalize == parent:
+#         node_required_to_calculate_frequency = node
+#     elif node_to_marginalize == node:
+#         node_required_to_calculate_frequency = parent    
+
+    likelihood_score = 0
+    # Calculating conditional probability  = (joint for each possible)/marginal 
+    for key, value in values.iteritems():
+        
+        joint = float(value)
+        
+        # We need to send the specific value for which we need the frequency
+        if flip == False:
+            # key[0] because, for this position of tuple we need to find the frequency 
+            specific_value = key[0]
+        elif flip == True:
+            specific_value = key[1]    
+            
+        marginal = get_marginal_probability(node, specific_value, category)
+        # To prevent NaN and value of log domain being zero
+        if marginal != 0 and joint != 0:    
+            conditional = float(joint) / float(marginal)
+            likelihood_score = likelihood_score + log10(conditional)
+    return likelihood_score
+    
+
+# Called for each value a variable take - node is the variable name, value's frequency needs to be found
+def get_marginal_probability(node, value, category):
+    features = load_features(category)
+    count = 0 
+    for feature in features:
+        if feature[int(node)-1] == int(value):
+            count = count + 1           
+    return count
+
+
+# method to load variables_combinations objects
+def load_variables_combinations(category):
+    if category == "cursive":
+        variables_combinations = pickle.load(open(SETTINGS.cursive_variables_combinations, "rb"))
+    elif category == "printed":
+        variables_combinations = pickle.load(open(SETTINGS.printed_variables_combinations, "rb"))
+            
+    return variables_combinations        

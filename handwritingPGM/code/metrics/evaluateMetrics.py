@@ -87,6 +87,7 @@ if __name__ == "__main__":
     total_feat_printed_3rd = get_features(SETTINGS.file_path_printed_3rd)
     total_feat_printed_4th = get_features(SETTINGS.file_path_printed_4th)
     
+    #writing features to files
     pickle.dump(total_feat_cursive_3rd, open("../cursive_3rd.p", "wb"))
     pickle.dump(total_feat_cursive_4th, open("../cursive_4th.p", "wb"))
     
@@ -107,7 +108,7 @@ if __name__ == "__main__":
     mean_printed_3rd = calculate_mean(total_feat_printed_3rd)
     mean_printed_4th = calculate_mean(total_feat_printed_4th)
      
-    print "Mean", mean_cursive_3rd, mean_cursive_4th, mean_printed_1st, mean_printed_2nd, mean_printed_2nd, mean_printed_3rd, mean_printed_4th 
+    print "Mean", mean_cursive_3rd, mean_cursive_4th, mean_printed_1st, mean_printed_2nd, mean_printed_3rd, mean_printed_4th 
      
     # Finding samples which are closest to the mean
     similar_scores_mean_cursive_3rd = get_similar_samples(total_feat_cursive_3rd, mean_cursive_3rd)

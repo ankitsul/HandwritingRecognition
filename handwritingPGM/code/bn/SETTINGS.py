@@ -58,7 +58,7 @@ printed_var_13 = [1, 2, 3, 4]
 
 
 
-#Paths of object files
+#Paths of object files containing features
 cursive_object_file_3 = "../cursive_3rd.p"
 cursive_object_file_4 = "../cursive_4th.p"
 
@@ -66,3 +66,8 @@ printed_object_file_1 = "../printed_1st.p"
 printed_object_file_2 = "../printed_2nd.p"
 printed_object_file_3 = "../printed_3rd.p"
 printed_object_file_4 = "../printed_4th.p"
+
+
+#Paths of object files containing variables_combinations
+cursive_variables_combinations = "../variables_combination_cursive.p"
+printed_variables_combinations = "../variables_combination_printed.p"
