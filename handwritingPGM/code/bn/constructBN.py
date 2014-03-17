@@ -11,8 +11,8 @@ from networkx.algorithms.dag import is_directed_acyclic_graph
 # dict_values in turn contains the frequency of combination of each possible value taken by (pair of) variables 
 def get_all_combinations_of_variables(category):
     # List for all the variables involved
-    random_variables = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-#     random_variables = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+#     random_variables = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+    random_variables = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     # Dictionary to store the variable values
     dict_variables = {}
     dict_values = {}
@@ -107,23 +107,23 @@ def construct_bayesian_network(chi_square_values, category):
         
         G1.add_edges_from(G.edges())
         #checking for at most 2 parents and also if the node is already present or not
-        if G1.in_degree([var2]) < 2 or G1.has_node(var2) == False:
-            G1.add_edge(var1, var2)
+#         if G1.in_degree([var2]) < 2 or G1.has_node(var2) == False:
+        G1.add_edge(var1, var2)
         
         G2.add_edges_from(G.edges())
-        if G2.in_degree([var1]) < 2 or G2.has_node(var1) == False:
-            G2.add_edge(var2, var1)
+#         if G2.in_degree([var1]) < 2 or G2.has_node(var1) == False:
+        G2.add_edge(var2, var1)
         
         s_G, s_G1 = get_log_likelihood(G, G1, category, variables_combinations)
-        if s_G1 > s_G and is_directed_acyclic_graph(G1): 
+        if s_G1 < s_G and is_directed_acyclic_graph(G1): 
             G = G1
             print "G1"
             print G.edges()
             
         s_G, s_G2 = get_log_likelihood(G, G2, category, variables_combinations)
-        if s_G2 > s_G and is_directed_acyclic_graph(G2):
+        if s_G2 < s_G and is_directed_acyclic_graph(G2):
             G = G2
-            print "G1"
+            print "G2"
             print G.edges()
         
         # Deleting the extracted edge
@@ -149,13 +149,13 @@ if __name__ == "__main__":
     chi_square_printed = calculate_chi_square(dict_variables_printed)
 
 
-#     G_cursive = construct_bayesian_network(chi_square_cursive, "cursive")
-#     print G_cursive.edges()
-#     print G_cursive.out_degree([1,2,3,4,5,6,7,8,9,10,11,12,13])
-#     print len(G_cursive.edges())
+    G_cursive = construct_bayesian_network(chi_square_cursive, "cursive")
+    print G_cursive.edges()
+    print G_cursive.out_degree([1,2,3,4,5,6,7,8,9,10,11,12,13])
+    print len(G_cursive.edges())
 
-    G_printed = construct_bayesian_network(chi_square_printed, "printed")
-    print G_printed.edges()
-    print G_printed.out_degree([1,2,3,4,5,6,7,8,9,10,11,12,13])
-    print len(G_printed.edges())
+#     G_printed = construct_bayesian_network(chi_square_printed, "printed")
+#     print G_printed.edges()
+#     print G_printed.out_degree([1,2,3,4,5,6,7,8,9,10,11,12,13])
+#     print len(G_printed.edges())
     

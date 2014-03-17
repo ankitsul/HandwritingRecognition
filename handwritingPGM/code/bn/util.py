@@ -144,9 +144,9 @@ def get_cell_value(key, value, dict_value):
 def get_log_likelihood(G, G1, category, variables_combinations):
     s_G = calculate_log_likelihood(G, variables_combinations, category)
     s_G1 = calculate_log_likelihood(G1, variables_combinations, category)
-    print "&&&"
-    print -s_G, -s_G1
-    return -s_G, -s_G1
+    print "SCORES"
+    print s_G, s_G1
+    return s_G, s_G1
 
 
 # method to calculate log_likelihood for a graph
@@ -156,8 +156,9 @@ def calculate_log_likelihood(G, variables_combinations, category):
     score_log_likelihood = 0
     for node in nodes:
         for parent in G.predecessors(node):
+            print "Node:Parent"
+            print node, parent
             score_log_likelihood = score_log_likelihood + get_likelihood_score_for_pair(str(node), str(parent), variables_combinations, category) 
-#             log10(joint_prob/marg_prob)
             
     return score_log_likelihood
     
@@ -173,37 +174,64 @@ def get_likelihood_score_for_pair(node, parent, variables_combinations, category
         values = variables_combinations[dict_key]
         # Marginalize against parent, it means we need to find the frequency of the other node (not parent)
         flip = False
+        print "FLIP=FALSE:"
+        print values
     except:
         # It means key is in opposite form in the variable_combinations dict
         dict_key_reverse = dict_key[::-1]
         values = variables_combinations[dict_key_reverse]
         flip = True
+        print "FLIP=TRUE:"
+        print values
         
-        
-    # Definition of marginalization    
-#     if node_to_marginalize == parent:
-#         node_required_to_calculate_frequency = node
-#     elif node_to_marginalize == node:
-#         node_required_to_calculate_frequency = parent    
-
+#     if category == "cursive":
+#         total_records = 920
+#     elif category == "printed":
+#         total_records = 1831    
+            
+#     total_joint_value = 0        
+#     for key, value in values.iteritems():
+#         total_joint_value = total_joint_value + float(value)        
+            
+            
     likelihood_score = 0
     # Calculating conditional probability  = (joint for each possible)/marginal 
     for key, value in values.iteritems():
         
+        print "JOINT"
+        print float(value)
         joint = float(value)
         
         # We need to send the specific value for which we need the frequency
         if flip == False:
             # key[0] because, for this position of tuple we need to find the frequency 
             specific_value = key[0]
+            print "FLIP=FALSE=AFTER"
+            print specific_value
         elif flip == True:
-            specific_value = key[1]    
+            specific_value = key[1]
+            print "FLIP=TRUE=AFTER"
+            print specific_value    
             
+        print "NODE"    
+        print node    
         marginal = get_marginal_probability(node, specific_value, category)
-        # To prevent NaN and value of log domain being zero
-        if marginal != 0 and joint != 0:    
+        # To prevent NaN and value of log domain being zero   
+        try:
             conditional = float(joint) / float(marginal)
+            print "conditional"
+            print conditional
+            print log10(conditional)
             likelihood_score = likelihood_score + log10(conditional)
+            print "likelihood score1"
+            print likelihood_score
+        except:
+            print "EXCEPTION"    
+        
+        
+            
+    print "likelihood score2"
+    print likelihood_score
     return likelihood_score
     
 
@@ -214,7 +242,9 @@ def get_marginal_probability(node, value, category):
     for feature in features:
         if feature[int(node)-1] == int(value):
             count = count + 1           
-    return count
+    print "COUNT="
+    print count
+    return float(count)
 
 
 # method to load variables_combinations objects

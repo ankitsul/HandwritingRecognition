@@ -1,5 +1,7 @@
 from math import log
 import pickle
+import numpy as np
+import operator
 
 import SETTINGS
 from util import read_file, parse_data, get_similarity_score, get_feature_map, remove_inconsistencies
@@ -44,6 +46,17 @@ def get_similar_samples(features, mean_feature):
     
     return scores
 
+def get_similar_samples_list(similar_samples_scores, feature_filepath):
+    indices_sorted_array = (-np.array(similar_samples_scores)).argsort()[:10]
+    features = pickle.load(open(feature_filepath, "rb"))    
+    similar_features_to_mean = [] 
+    print "Sorted"
+    print indices_sorted_array
+    for index in indices_sorted_array:
+        similar_features_to_mean.append(features[index])
+    
+    return similar_features_to_mean
+
 
 def get_entropy(features):
     s = 0
@@ -76,6 +89,13 @@ def get_relative_entropy(p_features, q_features):
     
     s = s/ max_sample
     return s
+
+
+def most_unusual_sample(feature_filepath):
+    features = pickle.load(open(feature_filepath, "rb"))
+    feature_map = get_feature_map(features)
+    sorted_feature_map = sorted(feature_map.iteritems(), key=operator.itemgetter(1))
+    return sorted_feature_map[0][0]
 
 
 if __name__ == "__main__":
@@ -120,9 +140,19 @@ if __name__ == "__main__":
     similar_scores_mean_printed_4th = get_similar_samples(total_feat_printed_4th, mean_printed_4th)
       
     #TODO: Need to get top samples  
-    print "Similarity scores", len(similar_scores_mean_cursive_3rd), len(similar_scores_mean_cursive_4th), len(similar_scores_mean_printed_1st), len(similar_scores_mean_printed_2nd), len(similar_scores_mean_printed_3rd), len(similar_scores_mean_printed_4th)
+    print "Similarity scores", similar_scores_mean_cursive_3rd, len(similar_scores_mean_cursive_4th), len(similar_scores_mean_printed_1st), len(similar_scores_mean_printed_2nd), len(similar_scores_mean_printed_3rd), len(similar_scores_mean_printed_4th)
+
+    similar_samples_cursive_3rd = get_similar_samples_list(similar_scores_mean_cursive_3rd, "../cursive_3rd.p")  
+    similar_samples_cursive_4th = get_similar_samples_list(similar_scores_mean_cursive_4th, "../cursive_4th.p")
+    
+    similar_samples_printed_1st = get_similar_samples_list(similar_scores_mean_printed_1st, "../printed_1st.p")
+    similar_samples_printed_2nd = get_similar_samples_list(similar_scores_mean_printed_2nd, "../printed_2nd.p")
+    similar_samples_printed_3rd = get_similar_samples_list(similar_scores_mean_printed_3rd, "../printed_3rd.p")
+    similar_samples_printed_4th = get_similar_samples_list(similar_scores_mean_printed_4th, "../printed_4th.p")
+
+    print "Similar samples", similar_samples_cursive_3rd, similar_samples_cursive_4th, similar_samples_printed_1st, similar_samples_printed_2nd, similar_samples_printed_3rd, similar_samples_printed_4th
       
-      
+    
     entropy_cursive_3rd = get_entropy(total_feat_cursive_3rd)
     entropy_cursive_4th = get_entropy(total_feat_cursive_4th)
       
@@ -147,3 +177,13 @@ if __name__ == "__main__":
     relative_entropy_printed_approximate_3rd_with_4th = get_relative_entropy(total_feat_printed_3rd, total_feat_printed_4th)   
     
     print "Relative Entropy", relative_entropy_cursive_approximate_3rd_with_4th, relative_entropy_printed_approximate_1st_with_2nd, relative_entropy_printed_approximate_1st_with_3rd, relative_entropy_printed_approximate_1st_with_4th, relative_entropy_printed_approximate_2nd_with_3rd, relative_entropy_printed_approximate_2nd_with_4th, relative_entropy_printed_approximate_3rd_with_4th
+
+    unusual_sample_cursive_3rd = most_unusual_sample("../cursive_3rd.p")
+    unusual_sample_cursive_4th = most_unusual_sample("../cursive_4th.p")
+    
+    unusual_sample_printed_1st = most_unusual_sample("../printed_1st.p")
+    unusual_sample_printed_2nd = most_unusual_sample("../printed_2nd.p")
+    unusual_sample_printed_3rd = most_unusual_sample("../printed_3rd.p")
+    unusual_sample_printed_4th = most_unusual_sample("../printed_4th.p")
+    
+    print "Unusual Sample", unusual_sample_cursive_3rd, unusual_sample_cursive_4th, unusual_sample_printed_1st, unusual_sample_printed_2nd, unusual_sample_printed_3rd, unusual_sample_printed_4th

@@ -17,7 +17,7 @@ cursive_var_7 = [0, 1, 2]
 #formation of "d" terminal
 cursive_var_8 = [0, 1, 2, 3]
 #Symbol
-cursive_var_9 = [0, 1]
+cursive_var_9 = [0, 1, 2]
 #a-n relationship
 cursive_var_10 = [0, 1, 2]
 #a-d relationship
@@ -46,7 +46,7 @@ printed_var_7 = [0, 1, 2, 3, 4]
 #initial stroke of "d"
 printed_var_8 = [0, 1]
 #Unusual formations
-printed_var_9 = [0, 1]
+printed_var_9 = [0, 1, 2]
 #a-n relationship
 printed_var_10 = [0, 1, 2]
 #a-d relationship
