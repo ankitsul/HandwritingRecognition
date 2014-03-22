@@ -2,6 +2,9 @@ from math import log
 import pickle
 import numpy as np
 import operator
+import matplotlib.pyplot as plt
+import pylab as pl
+from scipy.stats import norm
 
 import SETTINGS
 from util import read_file, parse_data, get_similarity_score, get_feature_map, remove_inconsistencies
@@ -95,7 +98,10 @@ def most_unusual_sample(feature_filepath):
     features = pickle.load(open(feature_filepath, "rb"))
     feature_map = get_feature_map(features)
     sorted_feature_map = sorted(feature_map.iteritems(), key=operator.itemgetter(1))
-    return sorted_feature_map[0][0]
+    unusual_samples = []
+    for i in range(5):
+        unusual_samples.append(sorted_feature_map[i][0])
+    return unusual_samples
 
 
 if __name__ == "__main__":
@@ -116,8 +122,20 @@ if __name__ == "__main__":
     pickle.dump(total_feat_printed_3rd, open("../printed_3rd.p", "wb"))
     pickle.dump(total_feat_printed_4th, open("../printed_4th.p", "wb"))
      
-     
-    print "Features", len(total_feat_cursive_3rd), len(total_feat_cursive_4th), len(total_feat_printed_1st), len(total_feat_printed_2nd), len(total_feat_printed_3rd), len(total_feat_printed_4th)
+    print "Features", total_feat_cursive_3rd, len(total_feat_cursive_4th), len(total_feat_printed_1st), len(total_feat_printed_2nd), len(total_feat_printed_3rd), len(total_feat_printed_4th)
+
+    #Graph plotting
+#     std = np.std(total_feat_cursive_3rd)
+#     mean = np.mean(total_feat_cursive_3rd)
+#     fit = norm.pdf(sorted(total_feat_cursive_3rd),mean, std)
+#     pl.plot_date(total_feat_cursive_3rd,fit, '-o')
+#     s = set(total_feat_cursive_3rd)
+#     y = []
+#     for i in range(498):
+#         y.append(3)
+# #     plt.plot(*zip(*total_feat_cursive_3rd))
+#     plt.scatter(total_feat_cursive_3rd)
+#     plt.show()
        
     # Calculating mean    
     mean_cursive_3rd = calculate_mean(total_feat_cursive_3rd)
